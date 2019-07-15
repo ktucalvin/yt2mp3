@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>yt2mp3</title>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; 
+      style-src 'self' https://fonts.googleapis.com; 
+      font-src https://fonts.gstatic.com; 
+      img-src https://i.ytimg.com;"
+    >
+    <link rel="stylesheet" href="index.css">
+  </head>
+  <body>
+    <div id="controls">
+      <p>Video URLs</p>
+      <form id="batch" action="#" onsubmit="return false">
+        <textarea id="url-list"></textarea>
+        <label for="outputDir"><b>Output Directory</b></label>
+        <input id="outputDir" type="file" webkitdirectory placeholder="Choose output directory">
+        <button id="process">Process Queue</button>
+        <button id="add">Add to Queue</button>
+      </form>
+    </div>
+
+    <ul id="queue">
+    </ul>
+  </body>
+</html>

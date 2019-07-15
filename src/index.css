@@ -1,0 +1,111 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+
+body {
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  background-color: #232126;
+  font-size: 18px;
+  text-align: center;
+}
+
+#controls {
+  display: inline-block;
+  background-color: #eaeaea;
+  padding: 1em;
+  text-align: left;
+}
+
+#controls p {
+  margin: 0;
+}
+
+#controls form {
+  margin: 1em;
+}
+
+#controls label {
+  font-size: 14px;
+}
+
+#controls input[type="file"] {
+  display: block;
+  font-size: 14px;
+}
+
+#controls textarea {
+  display: block;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 16px;
+  line-height: 20px;
+  height: 200px;
+  width: 30em;
+}
+
+#controls button {
+  display: block;
+  float: right;
+  padding: 0.7em 1em;
+  border: 0;
+  background-color: #b50000;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.4s;
+}
+
+#controls button:active,
+#controls button:focus,
+#controls button:hover {
+  background-color: #e22;
+}
+
+#controls button:last-child {
+  margin-right: 1em;
+}
+
+/* Queue */
+
+#queue {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 0;
+  text-align: center;
+}
+
+#queue li {
+  display: inline-flex;
+  margin: 1em;
+  background-color: #eaeaea;
+  list-style-type: none;
+}
+
+#queue img {
+  align-self: center;
+  width: 45%;
+  height: auto;
+}
+
+#queue input {
+  margin: 1em;
+  border: 0;
+  border-bottom: 2px solid #b50000;
+  font-size: 14px;
+  width: 90%;
+  outline: none;
+  background-color: rgba(0, 0, 0, 0);
+}
+
+#queue form {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#queue input:focus,
+#queue input:hover,
+#queue input:active {
+  border: 0;
+  border-bottom: 3px solid #e22;
+}
