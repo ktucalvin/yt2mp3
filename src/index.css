@@ -109,16 +109,20 @@ label#dl-progress {
 /* Queue */
 
 #queue {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  align-items: center;
+  justify-items: center;
+  grid-column-gap: 1em;
+  grid-row-gap: 1em;
+  width: 90%;
+  margin: 1em auto;
   padding: 0;
   text-align: center;
 }
 
 #queue li {
-  display: inline-flex;
-  margin: 1em;
+  display: flex;
   background-color: #eaeaea;
   list-style-type: none;
 }
