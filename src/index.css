@@ -20,15 +20,7 @@ body {
 
 #controls form {
   margin: 1em;
-}
-
-#controls label {
-  font-size: 14px;
-}
-
-#controls input[type="file"] {
-  display: block;
-  font-size: 14px;
+  margin-bottom: 0;
 }
 
 #controls textarea {
@@ -38,11 +30,58 @@ body {
   line-height: 20px;
   height: 200px;
   width: 30em;
+  resize: vertical;
+}
+
+#controls label {
+  display: block;
+  font-size: 14px;
+  margin: 0.3em 0;
+}
+
+#controls input[type="file"] {
+  display: block;
+  font-size: 14px;
+}
+
+label#dl-progress {
+  font-size: 12px;
+}
+
+.progress-bar {
+  margin-top: 0.3em;
+  width: 100%;
+  height: 8px;
+  border-radius: 12px;
+  background-color: #d1d1d1;
+}
+
+.progress-value {
+  display: flex;
+  height: 100%;
+  background-color: #e22;
+  border-radius: 12px;
+  transition: width 1s;
+}
+
+.progress-value span {
+  display: block;
+  visibility: hidden;
+  width: 100%;
+  height: 100%;
+  background-image: repeating-linear-gradient(45deg,#e22, #e22 5px, #b50000 5px, #b50000 10px);
+  background-size: 200px 200px;
+  border-radius: 12px;
+  animation: load 7s infinite linear;
+}
+
+@keyframes load {
+  from { background-position: -200px; }
+  to { background-position: 0; }
 }
 
 #controls button {
-  display: block;
-  float: right;
+  margin: 0.5em;
   padding: 0.7em 1em;
   border: 0;
   background-color: #b50000;
@@ -52,6 +91,11 @@ body {
   transition: 0.4s;
 }
 
+.align-end {
+  display: flex;
+  justify-content: flex-end;
+}
+
 #controls button:active,
 #controls button:focus,
 #controls button:hover {
@@ -59,7 +103,7 @@ body {
 }
 
 #controls button:last-child {
-  margin-right: 1em;
+  margin-right: 0;
 }
 
 /* Queue */

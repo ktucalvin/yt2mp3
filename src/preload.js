@@ -4,8 +4,8 @@ const { getURLVideoID } = require('ytdl-core')
 const ytdl = require('youtube-dl')
 const id3 = require('node-id3')
 const destRegex = /\[ffmpeg\] Destination: (.+.mp3)/
-const queue = []
-let $queue
+let queue = []
+let $queue, $dlProgress, $progressValue, $progressStripes
 
 function download (url, folder, args = [], options = {}) {
   args = ['-x', '--audio-format', 'mp3', '-o', `${folder}/%(title)s.%(ext)s`].concat(args)
@@ -16,6 +16,13 @@ function download (url, folder, args = [], options = {}) {
       resolve(destRegex.exec(output[0])[1])
     })
   })
+}
+
+function setProgressText (msg) {
+  $dlProgress.childNodes[0].textContent = msg
+  const visibility = msg ? 'visible' : 'hidden'
+  $progressStripes.style.visibility = visibility
+  if (msg) console.log(msg)
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -51,6 +58,7 @@ function addToQueue (e) {
 // eslint-disable-next-line no-unused-vars
 function processQueue (event, index = 0, outputDir) {
   event.preventDefault()
+  if (!queue.length) return
   if (!outputDir) {
     outputDir = document.getElementById('outputDir').files[0]
     outputDir = outputDir ? outputDir.path : './output'
@@ -61,21 +69,29 @@ function processQueue (event, index = 0, outputDir) {
     if (field.value) tags[field.className] = field.value
   }
 
-  console.log(`downloading ${$li.getAttribute('data-url')}`)
+  if (index === 0) {
+    $progressValue.style.width = '0'
+  }
+
+  setProgressText(`Downloading ${$li.getAttribute('data-url')} (${index + 1}/${queue.length})`)
 
   download($li.getAttribute('data-url'), outputDir)
     .then(filename => {
-      console.log(`Download finished. Outfile: ${filename}`)
+      setProgressText(`Download finished. Outfile: ${filename}`)
       if (!id3.write(tags, filename)) {
-        console.error(`FAILED TO WRITE TAGS FOR ${filename}`)
+        console.error(`Failed to write tags for ${filename}`)
       } else {
-        console.log(`Finished tagging ${filename}`)
+        setProgressText(`Finished tagging ${filename}`)
         $li.remove()
+        $progressValue.style.width = Math.ceil(((index + 1) * 100) / queue.length) + '%'
       }
     })
     .then(() => {
       if (index + 1 < queue.length) {
         processQueue(event, index + 1, outputDir)
+      } else {
+        queue = []
+        setProgressText('')
       }
     })
     .catch(err => console.error(err))
@@ -83,6 +99,9 @@ function processQueue (event, index = 0, outputDir) {
 
 window.addEventListener('DOMContentLoaded', () => {
   $queue = document.getElementById('queue')
+  $dlProgress = document.getElementById('dl-progress')
+  $progressStripes = document.querySelectorAll('#dl-progress span')[0]
+  $progressValue = document.querySelectorAll('#dl-progress .progress-value')[0]
   document.getElementById('add').addEventListener('click', addToQueue)
   document.getElementById('process').addEventListener('click', processQueue)
 })

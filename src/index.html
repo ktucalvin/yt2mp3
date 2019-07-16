@@ -18,8 +18,15 @@
         <textarea id="url-list"></textarea>
         <label for="outputDir"><b>Output Directory</b></label>
         <input id="outputDir" type="file" webkitdirectory placeholder="Choose output directory">
-        <button id="process">Process Queue</button>
-        <button id="add">Add to Queue</button>
+        <label id="dl-progress">
+          <div class="progress-bar">
+            <div class="progress-value"><span></span></div>
+          </div>
+        </label>
+        <div class="align-end">
+          <button id="add">Add to Queue</button>
+          <button id="process">Process Queue</button>
+        </div>
       </form>
     </div>
 
