@@ -5,24 +5,32 @@ const ytdl = require('youtube-dl')
 const id3 = require('node-id3')
 const destRegex = /\[ffmpeg\] Destination: (.+.mp3)/
 let queue = []
-let $queue, $dlProgress, $progressValue, $progressStripes
+
+const $ = e => document.querySelector(e)
 
 function download (url, folder, args = [], options = {}) {
   args = ['-x', '--audio-format', 'mp3', '-o', `${folder}/%(title)s.%(ext)s`].concat(args)
   return new Promise((resolve, reject) => {
     ytdl.exec(url, args, options, (err, output) => {
       if (err) reject(err)
-      output = output.filter(e => destRegex.test(e))
-      resolve(destRegex.exec(output[0])[1])
+      output = output.map(e => destRegex.exec(e)).filter(e => e)
+      resolve(output[0][1])
     })
   })
 }
 
 function setProgressText (msg) {
-  $dlProgress.childNodes[0].textContent = msg
+  document.getElementById('dl-progress').childNodes[0].textContent = msg
   const visibility = msg ? 'visible' : 'hidden'
-  $progressStripes.style.visibility = visibility
+  $('#dl-progress span').style.visibility = visibility
   if (msg) console.log(msg)
+}
+
+function disableForm (isDisabled) {
+  document.getElementById('add').disabled = isDisabled
+  document.getElementById('process').disabled = isDisabled
+  document.getElementById('outputDir').disabled = isDisabled
+  document.getElementById('url-list').disabled = isDisabled
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -49,7 +57,7 @@ function addToQueue (e) {
       `
       $li.setAttribute('data-url', `https://www.youtube.com/watch?v=${id}`)
       queue.push($li)
-      $queue.appendChild($li)
+      document.getElementById('queue').appendChild($li)
     }
   }
   $urlList.value = badUrls.filter(e => !/\s/.test(e)).join('\n')
@@ -70,10 +78,11 @@ function processQueue (event, index = 0, outputDir) {
   }
 
   if (index === 0) {
-    $progressValue.style.width = '0'
+    $('#dl-progress .progress-value').style.width = '0'
+    disableForm(true)
   }
 
-  setProgressText(`Downloading ${$li.getAttribute('data-url')} (${index + 1}/${queue.length})`)
+  setProgressText(`Downloading ${$li.getAttribute('data-url')} (${index + 1} of ${queue.length})`)
 
   download($li.getAttribute('data-url'), outputDir)
     .then(filename => {
@@ -83,8 +92,9 @@ function processQueue (event, index = 0, outputDir) {
       } else {
         setProgressText(`Finished tagging ${filename}`)
         $li.remove()
-        $progressValue.style.width = Math.ceil(((index + 1) * 100) / queue.length) + '%'
       }
+      const width = Math.ceil(((index + 1) * 100) / queue.length) + '%'
+      $('#dl-progress .progress-value').style.width = width
     })
     .then(() => {
       if (index + 1 < queue.length) {
@@ -92,16 +102,13 @@ function processQueue (event, index = 0, outputDir) {
       } else {
         queue = []
         setProgressText('')
+        disableForm(false)
       }
     })
     .catch(err => console.error(err))
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  $queue = document.getElementById('queue')
-  $dlProgress = document.getElementById('dl-progress')
-  $progressStripes = document.querySelectorAll('#dl-progress span')[0]
-  $progressValue = document.querySelectorAll('#dl-progress .progress-value')[0]
   document.getElementById('add').addEventListener('click', addToQueue)
   document.getElementById('process').addEventListener('click', processQueue)
 })
