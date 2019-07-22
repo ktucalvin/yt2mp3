@@ -128,22 +128,14 @@ label#dl-progress {
   display: flex;
   background-color: #eaeaea;
   list-style-type: none;
+  width: 600px;
+  max-width: 100%;
 }
 
 #queue img {
   align-self: center;
-  width: 45%;
-  height: auto;
-}
-
-#queue input {
-  margin: 1em;
-  border: 0;
-  border-bottom: 2px solid #b50000;
-  font-size: 14px;
-  width: 90%;
-  outline: none;
-  background-color: rgba(0, 0, 0, 0);
+  max-width: 285px;
+  max-height: 160px;
 }
 
 #queue form {
@@ -154,9 +146,26 @@ label#dl-progress {
   align-items: center;
 }
 
+#queue input {
+  padding: 0.2em;
+  margin: 1em;
+  border: 0;
+  border-bottom: 2px solid #b50000;
+  font-size: 14px;
+  width: 90%;
+  outline: none;
+  background-color: rgba(0, 0, 0, 0);
+}
+
 #queue input:focus,
 #queue input:hover,
 #queue input:active {
   border: 0;
-  border-bottom: 3px solid #e22;
+  border-bottom: 2px solid #e22;
+}
+
+@media all and (min-width: 1250px) {
+  #queue li {
+    width: 100%;
+  }
 }

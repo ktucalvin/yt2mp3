@@ -48,7 +48,7 @@ function addToQueue (e) {
       const $li = document.createElement('li')
       $li.innerHTML =
       `
-        <img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg">
+        <img src="https://i.ytimg.com/vi/${id}/mqdefault.jpg">
         <form action="#" onsubmit="return false">
           <input type="text" class="title" placeholder="Song Title">
           <input type="text" class="artist" placeholder="Artist">
