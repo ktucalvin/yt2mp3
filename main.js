@@ -11,19 +11,26 @@ function createWindow () {
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.resolve('src/preload.js')
+      preload: path.resolve('src/preload.js'),
+      enableRemoteModule: false
     }
   })
   mainWindow.loadFile('src/index.html')
   mainWindow.on('closed', function () {
     mainWindow = null
   })
+  mainWindow.removeMenu()
 }
 
 app.on('ready', createWindow)
 
 app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') app.quit()
+})
+
+app.on('web-contents-created', (event, contents) => {
+  contents.on('will-navigate', e => e.preventDefault())
+  contents.on('new-window', e => e.preventDefault())
 })
 
 app.on('activate', function () {

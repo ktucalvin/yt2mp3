@@ -38,7 +38,7 @@ function addToQueue (e) {
   e.preventDefault()
   const $urlList = document.getElementById('url-list')
   const urls = $urlList.value.split('\n')
-  let badUrls = []
+  const badUrls = []
 
   for (let i = 0; i < urls.length; i++) {
     const id = getURLVideoID(urls[i])
@@ -72,7 +72,7 @@ function processQueue (event, index = 0, outputDir) {
     outputDir = outputDir ? outputDir.path : './output'
   }
   const $li = queue[index]
-  let tags = {}
+  const tags = {}
   for (const field of $li.children[1].children) {
     if (field.value) tags[field.className] = field.value
   }
