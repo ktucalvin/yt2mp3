@@ -3,20 +3,28 @@
 const { getURLVideoID } = require('ytdl-core')
 const ytdl = require('youtube-dl')
 const id3 = require('node-id3')
+const ffmpeg = require('ffmpeg-static').path
 const destRegex = /\[ffmpeg\] Destination: (.+.mp3)/
 let queue = []
 
 const $ = e => document.querySelector(e)
 
-function download (url, folder, args = [], options = {}) {
-  args = ['-x', '--audio-format', 'mp3', '-o', `${folder}/%(title)s.%(ext)s`].concat(args)
+function downloadVideo (url, folder, args = [], options = {}) {
+  args = ['-x', '--audio-format', 'mp3', '--ffmpeg-location', `${ffmpeg}`, '-o', `${folder}/%(title)s.%(ext)s`].concat(args)
   return new Promise((resolve, reject) => {
     ytdl.exec(url, args, options, (err, output) => {
       if (err) reject(err)
+      if (!output) reject(new Error('No output file was generated'))
       output = output.map(e => destRegex.exec(e)).filter(e => e)
       resolve(output[0][1])
     })
   })
+}
+
+function tagSong (file, tags) {
+  if (!id3.write(tags, file)) {
+    throw new Error(`Failed to write tags for ${file}`)
+  }
 }
 
 function setProgressText (msg) {
@@ -64,7 +72,7 @@ function addToQueue (e) {
 }
 
 // eslint-disable-next-line no-unused-vars
-function processQueue (event, index = 0, outputDir) {
+async function processQueue (event, index = 0, outputDir) {
   event.preventDefault()
   if (!queue.length) return
   if (!outputDir) {
@@ -84,28 +92,28 @@ function processQueue (event, index = 0, outputDir) {
 
   setProgressText(`Downloading ${$li.getAttribute('data-url')} (${index + 1} of ${queue.length})`)
 
-  download($li.getAttribute('data-url'), outputDir)
-    .then(filename => {
-      setProgressText(`Download finished. Outfile: ${filename}`)
-      if (!id3.write(tags, filename)) {
-        console.error(`Failed to write tags for ${filename}`)
-      } else {
-        setProgressText(`Finished tagging ${filename}`)
-        $li.remove()
-      }
-      const width = Math.ceil(((index + 1) * 100) / queue.length) + '%'
-      $('#dl-progress .progress-value').style.width = width
-    })
-    .then(() => {
-      if (index + 1 < queue.length) {
-        processQueue(event, index + 1, outputDir)
-      } else {
-        queue = []
-        setProgressText('')
-        disableForm(false)
-      }
-    })
-    .catch(err => console.error(err))
+  try {
+    const outfile = await downloadVideo($li.getAttribute('data-url'), outputDir)
+    setProgressText(`Download finished. Outfile: ${outfile}`)
+
+    await tagSong(outfile, tags)
+    setProgressText(`Finished tagging ${outfile}`)
+
+    $li.remove()
+    const width = Math.ceil(((index + 1) * 100) / queue.length) + '%'
+    $('#dl-progress .progress-value').style.width = width
+
+    if (index + 1 < queue.length) {
+      processQueue(event, index + 1, outputDir)
+    } else {
+      queue = []
+      setProgressText('')
+      disableForm(false)
+    }
+  } catch (err) {
+    console.error(err)
+    alert(`An error has occurred. Perhaps open an issue on GitHub?\n${err}`)
+  }
 }
 
 window.addEventListener('DOMContentLoaded', () => {
