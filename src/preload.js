@@ -1,16 +1,20 @@
 'use strict'
 /* eslint-env browser */
+const path = require('path')
 const { getURLVideoID } = require('ytdl-core')
 const ytdl = require('youtube-dl')
 const id3 = require('node-id3')
-const ffmpeg = require('ffmpeg-static').path
 const destRegex = /\[ffmpeg\] Destination: (.+.mp3)/
+const appRoot = process.argv.slice(-1)[0] // passed from main process
+const ffmpegPath = appRoot.includes('.asar')
+  ? path.join(appRoot, '..', 'ffmpeg')
+  : require('ffmpeg-static').path
 let queue = []
 
 const $ = e => document.querySelector(e)
 
 function downloadVideo (url, folder, args = [], options = {}) {
-  args = ['-x', '--audio-format', 'mp3', '--ffmpeg-location', `${ffmpeg}`, '-o', `${folder}/%(title)s.%(ext)s`].concat(args)
+  args = ['-x', '--audio-format', 'mp3', '--ffmpeg-location', `${ffmpegPath}`, '-o', `${folder}/%(title)s.%(ext)s`].concat(args)
   return new Promise((resolve, reject) => {
     ytdl.exec(url, args, options, (err, output) => {
       if (err) reject(err)

@@ -11,8 +11,9 @@ function createWindow () {
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.resolve('src/preload.js'),
-      enableRemoteModule: false
+      preload: path.join(__dirname, 'src', 'preload.js'),
+      enableRemoteModule: false,
+      additionalArguments: [app.getAppPath()]
     }
   })
   mainWindow.loadFile('src/index.html')
