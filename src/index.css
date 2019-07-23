@@ -167,5 +167,6 @@ label#dl-progress {
 @media all and (min-width: 1250px) {
   #queue li {
     width: 100%;
+    max-width: 750px;
   }
 }
