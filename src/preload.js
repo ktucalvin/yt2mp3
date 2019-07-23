@@ -1,11 +1,17 @@
 'use strict'
 /* eslint-env browser */
+const fs = require('fs')
 const path = require('path')
 const { getURLVideoID } = require('ytdl-core')
 const ytdl = require('youtube-dl')
 const id3 = require('node-id3')
 const destRegex = /\[ffmpeg\] Destination: (.+.mp3)/
-const appRoot = process.argv.slice(-1)[0] // passed from main process
+
+// passed from main process
+const additionalArgs = process.argv.slice(-2)
+const appRoot = additionalArgs[0]
+const defaultOut = path.join(additionalArgs[1], 'yt2mp3')
+
 const ffmpegPath = appRoot.includes('.asar')
   ? path.join(appRoot, '..', 'ffmpeg')
   : require('ffmpeg-static').path
@@ -81,8 +87,12 @@ async function processQueue (event, index = 0, outputDir) {
   if (!queue.length) return
   if (!outputDir) {
     outputDir = document.getElementById('outputDir').files[0]
-    outputDir = outputDir ? outputDir.path : './output'
+    outputDir = outputDir ? outputDir.path : defaultOut
   }
+  if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true })
+  }
+
   const $li = queue[index]
   const tags = {}
   for (const field of $li.children[1].children) {

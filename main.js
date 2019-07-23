@@ -13,7 +13,7 @@ function createWindow () {
     webPreferences: {
       preload: path.join(__dirname, 'src', 'preload.js'),
       enableRemoteModule: false,
-      additionalArguments: [app.getAppPath()]
+      additionalArguments: [app.getAppPath(), app.getPath('downloads')]
     }
   })
   mainWindow.loadFile('src/index.html')
