@@ -20,11 +20,11 @@ let queue = []
 const $ = e => document.querySelector(e)
 
 function fetchVideoInfo (id) {
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     fetch(`https://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=${id}&format=json`)
       .then(res => res.json())
       .then(resolve)
-      .catch(reject)
+      .catch(alertError)
   })
 }
 
@@ -44,6 +44,11 @@ function tagSong (file, tags) {
   if (!id3.write(tags, file)) {
     throw new Error(`Failed to write tags for ${file}`)
   }
+}
+
+function alertError (err) {
+  console.error(err)
+  alert(`An error has occurred. Perhaps open an issue on GitHub?\n\n${err}`)
 }
 
 function setProgressText (msg) {
@@ -125,8 +130,7 @@ async function processQueue () {
       const width = Math.ceil(((i + 1) * 100) / queue.length) + '%'
       $('#dl-progress .progress-value').style.width = width
     } catch (err) {
-      console.error(err)
-      alert(`An error has occurred. Perhaps open an issue on GitHub?\n${err}`)
+      alertError(err)
     }
   }
 
