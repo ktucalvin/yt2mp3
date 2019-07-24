@@ -60,8 +60,7 @@ function disableForm (isDisabled) {
   document.getElementById('url-list').disabled = isDisabled
 }
 
-async function addToQueue (e) {
-  e.preventDefault()
+async function addToQueue () {
   const $urlList = document.getElementById('url-list')
   const urls = $urlList.value.split('\n')
   const badUrls = []
@@ -95,53 +94,45 @@ async function addToQueue (e) {
   $urlList.value = badUrls.filter(e => !/\s/.test(e)).join('\n')
 }
 
-async function processQueue (event, index = 0, outputDir) {
-  event.preventDefault()
+async function processQueue () {
   if (!queue.length) return
-  if (!outputDir) {
-    outputDir = document.getElementById('outputDir').files[0]
-    outputDir = outputDir ? outputDir.path : defaultOut
-  }
+  let outputDir = document.getElementById('outputDir').files[0]
+  outputDir = outputDir ? outputDir.path : defaultOut
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true })
   }
 
-  const video = queue[index]
-  const $li = video.element
-  const tags = {}
-  for (const field of $li.children[1].children) {
-    if (field.value) tags[field.className] = field.value
-  }
+  $('#dl-progress .progress-value').style.width = '0'
+  disableForm(true)
 
-  if (index === 0) {
-    $('#dl-progress .progress-value').style.width = '0'
-    disableForm(true)
-  }
-
-  setProgressText(`Downloading ${video.title} (${index + 1} of ${queue.length})`)
-
-  try {
-    const outfile = await downloadVideo(video.url, outputDir)
-    setProgressText(`Download finished. Outfile: ${outfile}`)
-
-    await tagSong(outfile, tags)
-    setProgressText(`Finished tagging ${outfile}`)
-
-    $li.remove()
-    const width = Math.ceil(((index + 1) * 100) / queue.length) + '%'
-    $('#dl-progress .progress-value').style.width = width
-
-    if (index + 1 < queue.length) {
-      processQueue(event, index + 1, outputDir)
-    } else {
-      queue = []
-      setProgressText('')
-      disableForm(false)
+  for (let i = 0; i < queue.length; i++) {
+    const video = queue[i]
+    const $li = video.element
+    const tags = {}
+    for (const field of $li.children[1].children) {
+      if (field.value) tags[field.className] = field.value
     }
-  } catch (err) {
-    console.error(err)
-    alert(`An error has occurred. Perhaps open an issue on GitHub?\n${err}`)
+    setProgressText(`Downloading ${video.title} (${i + 1} of ${queue.length})`)
+
+    try {
+      const outfile = await downloadVideo(video.url, outputDir)
+      setProgressText(`Download finished. Outfile: ${outfile}`)
+
+      await tagSong(outfile, tags)
+      setProgressText(`Finished tagging ${outfile}`)
+
+      $li.remove()
+      const width = Math.ceil(((i + 1) * 100) / queue.length) + '%'
+      $('#dl-progress .progress-value').style.width = width
+    } catch (err) {
+      console.error(err)
+      alert(`An error has occurred. Perhaps open an issue on GitHub?\n${err}`)
+    }
   }
+
+  queue = []
+  setProgressText('')
+  disableForm(false)
 }
 
 window.addEventListener('DOMContentLoaded', () => {
