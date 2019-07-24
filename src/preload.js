@@ -19,6 +19,15 @@ let queue = []
 
 const $ = e => document.querySelector(e)
 
+function fetchVideoInfo (id) {
+  return new Promise((resolve, reject) => {
+    fetch(`https://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=${id}&format=json`)
+      .then(res => res.json())
+      .then(resolve)
+      .catch(reject)
+  })
+}
+
 function downloadVideo (url, folder, args = [], options = {}) {
   args = ['-x', '--audio-format', 'mp3', '--ffmpeg-location', `${ffmpegPath}`, '-o', `${folder}/%(title)s.%(ext)s`].concat(args)
   return new Promise((resolve, reject) => {
@@ -51,8 +60,7 @@ function disableForm (isDisabled) {
   document.getElementById('url-list').disabled = isDisabled
 }
 
-// eslint-disable-next-line no-unused-vars
-function addToQueue (e) {
+async function addToQueue (e) {
   e.preventDefault()
   const $urlList = document.getElementById('url-list')
   const urls = $urlList.value.split('\n')
@@ -67,21 +75,26 @@ function addToQueue (e) {
       $li.innerHTML =
       `
         <img src="https://i.ytimg.com/vi/${id}/mqdefault.jpg">
-        <form action="#" onsubmit="return false">
+        <form>
           <input type="text" class="title" placeholder="Song Title">
           <input type="text" class="artist" placeholder="Artist">
           <input type="text" class="album" placeholder="Album">
         </form>
       `
-      $li.setAttribute('data-url', `https://www.youtube.com/watch?v=${id}`)
-      queue.push($li)
+      const info = await fetchVideoInfo(id)
+      const video = {
+        element: $li,
+        url: `https://www.youtube.com/watch?v=${id}`,
+        title: info.title,
+        uploader: info.author_name
+      }
+      queue.push(video)
       document.getElementById('queue').appendChild($li)
     }
   }
   $urlList.value = badUrls.filter(e => !/\s/.test(e)).join('\n')
 }
 
-// eslint-disable-next-line no-unused-vars
 async function processQueue (event, index = 0, outputDir) {
   event.preventDefault()
   if (!queue.length) return
@@ -93,7 +106,8 @@ async function processQueue (event, index = 0, outputDir) {
     fs.mkdirSync(outputDir, { recursive: true })
   }
 
-  const $li = queue[index]
+  const video = queue[index]
+  const $li = video.element
   const tags = {}
   for (const field of $li.children[1].children) {
     if (field.value) tags[field.className] = field.value
@@ -104,10 +118,10 @@ async function processQueue (event, index = 0, outputDir) {
     disableForm(true)
   }
 
-  setProgressText(`Downloading ${$li.getAttribute('data-url')} (${index + 1} of ${queue.length})`)
+  setProgressText(`Downloading ${video.title} (${index + 1} of ${queue.length})`)
 
   try {
-    const outfile = await downloadVideo($li.getAttribute('data-url'), outputDir)
+    const outfile = await downloadVideo(video.url, outputDir)
     setProgressText(`Download finished. Outfile: ${outfile}`)
 
     await tagSong(outfile, tags)
