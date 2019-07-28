@@ -60,7 +60,7 @@ label#dl-progress {
   height: 100%;
   background-color: #e22;
   border-radius: 12px;
-  transition: width 1s;
+  transition: width 0.5s;
 }
 
 .progress-value span {

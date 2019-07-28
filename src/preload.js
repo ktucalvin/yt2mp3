@@ -2,10 +2,10 @@
 /* eslint-env browser */
 const fs = require('fs')
 const path = require('path')
-const { getURLVideoID } = require('ytdl-core')
-const ytdl = require('youtube-dl')
+const { execFile } = require('child_process')
+const ytdl = require('ytdl-core')
+const sanitize = require('sanitize-filename')
 const id3 = require('node-id3')
-const destRegex = /\[ffmpeg\] Destination: (.+.mp3)/
 
 // passed from main process
 const additionalArgs = process.argv.slice(-2)
@@ -28,15 +28,46 @@ function fetchVideoInfo (id) {
   })
 }
 
-function downloadVideo (url, folder, args = [], options = {}) {
-  args = ['-x', '--audio-format', 'mp3', '--ffmpeg-location', `${ffmpegPath}`, '-o', `${folder}/%(title)s.%(ext)s`].concat(args)
+function downloadVideo (url, folder, updateStyle) {
   return new Promise((resolve, reject) => {
-    ytdl.exec(url, args, options, (err, output) => {
-      if (err) reject(err)
-      if (!output) reject(new Error('No output file was generated'))
-      output = output.map(e => destRegex.exec(e)).filter(e => e)
-      resolve(output[0][1])
+    const outfile = path.join(folder, 'out.tmp')
+    const download = ytdl(url)
+    download.on('progress', (chunk, downloaded, total) => {
+      requestAnimationFrame(() => updateStyle(downloaded / total))
     })
+    download.on('end', resolve)
+    download.on('error', reject)
+    download.pipe(fs.createWriteStream(outfile))
+  })
+}
+
+function toMilliseconds (timestamp) {
+  const arr = timestamp.split(':').map(e => parseFloat(e))
+  return (arr[0] * 1000 * 60 * 60) + (arr[1] * 60 * 1000) + (arr[2] * 1000)
+}
+
+function convertToMp3 (title, folder, updateStyle) {
+  return new Promise((resolve, reject) => {
+    const outfile = path.join(folder, `${sanitize(title)}.mp3`)
+    const args = ['-i', path.join(folder, 'out.tmp'), '-y', '-progress', 'pipe:1', '-vn', '-ar', '44100', '-ac', '2', '-ab', '192k', '-f', 'mp3', outfile]
+    const ffmpeg = execFile(ffmpegPath, args)
+    let total
+    ffmpeg.stderr.on('data', chunk => {
+      const totalRegex = /Duration: (\d{2}:\d{2}:\d{2}\.\d{2})/.exec(chunk)
+      const currentRegex = /time=(\d{2}:\d{2}:\d{2}\.\d{2})/.exec(chunk)
+      if (totalRegex) {
+        total = toMilliseconds(totalRegex[1])
+      }
+      if (currentRegex) {
+        const converted = toMilliseconds(currentRegex[1])
+        requestAnimationFrame(() => updateStyle(converted / total))
+      }
+    })
+    ffmpeg.on('close', () => {
+      fs.unlinkSync(path.join(folder, 'out.tmp'))
+      resolve(outfile)
+    })
+    ffmpeg.on('error', reject)
   })
 }
 
@@ -51,11 +82,12 @@ function alertError (err) {
   alert(`An error has occurred. Perhaps open an issue on GitHub?\n\n${err}`)
 }
 
-function setProgressText (msg) {
-  document.getElementById('dl-progress').childNodes[0].textContent = msg
-  const visibility = msg ? 'visible' : 'hidden'
-  $('#dl-progress span').style.visibility = visibility
+function setTotalProgressText (msg) {
+  document.getElementById('total-progress').childNodes[0].textContent = msg
   if (msg) console.log(msg)
+  const visibility = msg ? 'visible' : 'hidden'
+  $('#song-progress span').style.visibility = visibility
+  $('#total-progress span').style.visibility = visibility
 }
 
 function disableForm (isDisabled) {
@@ -71,7 +103,7 @@ async function addToQueue () {
   const badUrls = []
 
   for (let i = 0; i < urls.length; i++) {
-    const id = getURLVideoID(urls[i])
+    const id = ytdl.getURLVideoID(urls[i])
     if (!id || id instanceof Error) {
       badUrls.push(urls[i])
     } else {
@@ -107,7 +139,7 @@ async function processQueue () {
     fs.mkdirSync(outputDir, { recursive: true })
   }
 
-  $('#dl-progress .progress-value').style.width = '0'
+  $('#total-progress .progress-value').style.width = '0'
   disableForm(true)
 
   for (let i = 0; i < queue.length; i++) {
@@ -117,29 +149,48 @@ async function processQueue () {
     for (const field of $li.children[1].children) {
       if (field.value) tags[field.className] = field.value
     }
-    setProgressText(`Downloading ${video.title} (${i + 1} of ${queue.length})`)
+    setTotalProgressText(`Processing ${video.title} (${i + 1} of ${queue.length})`)
+    $('#song-progress .progress-value').style.width = '0'
 
     try {
-      const outfile = await downloadVideo(video.url, outputDir)
-      setProgressText(`Download finished. Outfile: ${outfile}`)
+      await downloadVideo(video.url, outputDir, progress => {
+        const percentage = `${(progress * 50).toFixed(2)}%`
+        document.getElementById('song-progress').childNodes[0].textContent = `Downloading video... (${percentage})`
+        $('#song-progress .progress-value').style.width = percentage
+      })
+      console.log(`Download finished. Extracting audio.`)
+
+      const outfile = await convertToMp3(video.title, outputDir, progress => {
+        const percentage = `${(50 + progress * 50).toFixed(2)}%`
+        document.getElementById('song-progress').childNodes[0].textContent = `Extracting audio... (${percentage})`
+        $('#song-progress .progress-value').style.width = percentage
+      })
+      console.log(`Audio extracted. Adding tags.`)
 
       await tagSong(outfile, tags)
-      setProgressText(`Finished tagging ${outfile}`)
+      $('#song-progress .progress-value').style.width = '100%'
+      console.log(`Finished tagging ${outfile}`)
 
       $li.remove()
       const width = Math.ceil(((i + 1) * 100) / queue.length) + '%'
-      $('#dl-progress .progress-value').style.width = width
+      $('#total-progress .progress-value').style.width = width
     } catch (err) {
       alertError(err)
     }
   }
 
   queue = []
-  setProgressText('')
-  disableForm(false)
+  requestAnimationFrame(() => {
+    setTotalProgressText('')
+    document.getElementById('song-progress').childNodes[0].textContent = ''
+    disableForm(false)
+  })
 }
 
 window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('add').addEventListener('click', addToQueue)
   document.getElementById('process').addEventListener('click', processQueue)
 })
+
+let _si = setImmediate
+process.once('loaded', () => (global.setImmediate = _si))

@@ -1,6 +1,4 @@
 'use strict'
-// Skeleton code taken from the electron-quick-start repo
-// The repo can be found at https://github.com/electron/electron-quick-start
 const { app, BrowserWindow } = require('electron')
 const path = require('path')
 let mainWindow

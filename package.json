@@ -1,6 +1,6 @@
 {
   "name": "yt2mp3",
-  "version": "0.0.11",
+  "version": "0.1.0",
   "description": "Convert videos from YouTube to tagged mp3 files.",
   "main": "main.js",
   "scripts": {
@@ -19,7 +19,7 @@
   "dependencies": {
     "ffmpeg-static": "^2.5.0",
     "node-id3": "^0.1.7",
-    "youtube-dl": "^2.0.0",
+    "sanitize-filename": "^1.6.1",
     "ytdl-core": "^0.29.3"
   },
   "build": {
