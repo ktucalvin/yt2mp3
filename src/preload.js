@@ -28,30 +28,18 @@ function fetchVideoInfo (id) {
   })
 }
 
-function downloadVideo (url, folder, updateStyle) {
-  return new Promise((resolve, reject) => {
-    const outfile = path.join(folder, 'out.tmp')
-    const download = ytdl(url)
-    download.on('progress', (chunk, downloaded, total) => {
-      requestAnimationFrame(() => updateStyle(downloaded / total))
-    })
-    download.on('end', resolve)
-    download.on('error', reject)
-    download.pipe(fs.createWriteStream(outfile))
-  })
-}
-
 function toMilliseconds (timestamp) {
   const arr = timestamp.split(':').map(e => parseFloat(e))
   return (arr[0] * 1000 * 60 * 60) + (arr[1] * 60 * 1000) + (arr[2] * 1000)
 }
 
-function convertToMp3 (title, folder, updateStyle) {
+function extractAudio (video, folder, updateStyle) {
   return new Promise((resolve, reject) => {
-    const outfile = path.join(folder, `${sanitize(title)}.mp3`)
-    const args = ['-i', path.join(folder, 'out.tmp'), '-y', '-progress', 'pipe:1', '-vn', '-ar', '44100', '-ac', '2', '-ab', '192k', '-f', 'mp3', outfile]
+    const outfile = path.join(folder, `${sanitize(video.title)}.mp3`)
+    const args = ['-i', 'pipe:', '-y', '-progress', 'pipe:1', '-vn', '-ar', '44100', '-ac', '2', '-ab', '192k', '-f', 'mp3', outfile]
     const ffmpeg = execFile(ffmpegPath, args)
     let total
+    ytdl(video.url).pipe(ffmpeg.stdin)
     ffmpeg.stderr.on('data', chunk => {
       const totalRegex = /Duration: (\d{2}:\d{2}:\d{2}\.\d{2})/.exec(chunk)
       const currentRegex = /time=(\d{2}:\d{2}:\d{2}\.\d{2})/.exec(chunk)
@@ -63,10 +51,7 @@ function convertToMp3 (title, folder, updateStyle) {
         requestAnimationFrame(() => updateStyle(converted / total))
       }
     })
-    ffmpeg.on('close', () => {
-      fs.unlinkSync(path.join(folder, 'out.tmp'))
-      resolve(outfile)
-    })
+    ffmpeg.on('close', () => resolve(outfile))
     ffmpeg.on('error', reject)
   })
 }
@@ -153,15 +138,8 @@ async function processQueue () {
     $('#song-progress .progress-value').style.width = '0'
 
     try {
-      await downloadVideo(video.url, outputDir, progress => {
-        const percentage = `${(progress * 50).toFixed(2)}%`
-        document.getElementById('song-progress').childNodes[0].textContent = `Downloading video... (${percentage})`
-        $('#song-progress .progress-value').style.width = percentage
-      })
-      console.log(`Download finished. Extracting audio.`)
-
-      const outfile = await convertToMp3(video.title, outputDir, progress => {
-        const percentage = `${(50 + progress * 50).toFixed(2)}%`
+      const outfile = await extractAudio(video, outputDir, progress => {
+        const percentage = `${(progress * 100).toFixed(2)}%`
         document.getElementById('song-progress').childNodes[0].textContent = `Extracting audio... (${percentage})`
         $('#song-progress .progress-value').style.width = percentage
       })
