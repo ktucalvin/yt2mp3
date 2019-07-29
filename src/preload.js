@@ -19,15 +19,6 @@ let queue = []
 
 const $ = e => document.querySelector(e)
 
-function fetchVideoInfo (id) {
-  return new Promise(resolve => {
-    fetch(`https://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=${id}&format=json`)
-      .then(res => res.json())
-      .then(resolve)
-      .catch(alertError)
-  })
-}
-
 function toMilliseconds (timestamp) {
   const arr = timestamp.split(':').map(e => parseFloat(e))
   return (arr[0] * 1000 * 60 * 60) + (arr[1] * 60 * 1000) + (arr[2] * 1000)
@@ -56,6 +47,15 @@ function extractAudio (video, folder, updateStyle) {
   })
 }
 
+function fetchVideoInfo (id) {
+  return new Promise((resolve, reject) => {
+    fetch(`https://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=${id}&format=json`)
+      .then(res => res.json())
+      .then(resolve)
+      .catch(reject)
+  })
+}
+
 function tagSong (file, tags) {
   if (!id3.write(tags, file)) {
     throw new Error(`Failed to write tags for ${file}`)
@@ -68,7 +68,7 @@ function alertError (err) {
 }
 
 function setTotalProgressText (msg) {
-  document.getElementById('total-progress').childNodes[0].textContent = msg
+  $('#total-progress').childNodes[0].textContent = msg
   if (msg) console.log(msg)
   const visibility = msg ? 'visible' : 'hidden'
   $('#song-progress span').style.visibility = visibility
@@ -76,14 +76,14 @@ function setTotalProgressText (msg) {
 }
 
 function disableForm (isDisabled) {
-  document.getElementById('add').disabled = isDisabled
-  document.getElementById('process').disabled = isDisabled
-  document.getElementById('outputDir').disabled = isDisabled
-  document.getElementById('url-list').disabled = isDisabled
+  $('#add').disabled = isDisabled
+  $('#process').disabled = isDisabled
+  $('#outputDir').disabled = isDisabled
+  $('#url-list').disabled = isDisabled
 }
 
 async function addToQueue () {
-  const $urlList = document.getElementById('url-list')
+  const $urlList = $('#url-list')
   const urls = $urlList.value.split('\n')
   const badUrls = []
 
@@ -102,15 +102,19 @@ async function addToQueue () {
           <input type="text" class="album" placeholder="Album">
         </form>
       `
-      const info = await fetchVideoInfo(id)
-      const video = {
-        element: $li,
-        url: `https://www.youtube.com/watch?v=${id}`,
-        title: info.title,
-        uploader: info.author_name
+      try {
+        const info = await fetchVideoInfo(id)
+        const video = {
+          element: $li,
+          url: `https://www.youtube.com/watch?v=${id}`,
+          title: info.title,
+          uploader: info.author_name
+        }
+        queue.push(video)
+        $('#queue').appendChild($li)
+      } catch (err) {
+        alertError(err)
       }
-      queue.push(video)
-      document.getElementById('queue').appendChild($li)
     }
   }
   $urlList.value = badUrls.filter(e => !/\s/.test(e)).join('\n')
@@ -118,7 +122,7 @@ async function addToQueue () {
 
 async function processQueue () {
   if (!queue.length) return
-  let outputDir = document.getElementById('outputDir').files[0]
+  let outputDir = $('#outputDir').files[0]
   outputDir = outputDir ? outputDir.path : defaultOut
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true })
@@ -140,12 +144,12 @@ async function processQueue () {
     try {
       const outfile = await extractAudio(video, outputDir, progress => {
         const percentage = `${(progress * 100).toFixed(2)}%`
-        document.getElementById('song-progress').childNodes[0].textContent = `Extracting audio... (${percentage})`
+        $('#song-progress').childNodes[0].textContent = `Extracting audio... (${percentage})`
         $('#song-progress .progress-value').style.width = percentage
       })
       console.log(`Audio extracted. Adding tags.`)
 
-      await tagSong(outfile, tags)
+      tagSong(outfile, tags)
       $('#song-progress .progress-value').style.width = '100%'
       console.log(`Finished tagging ${outfile}`)
 
@@ -160,14 +164,14 @@ async function processQueue () {
   queue = []
   requestAnimationFrame(() => {
     setTotalProgressText('')
-    document.getElementById('song-progress').childNodes[0].textContent = ''
+    $('#song-progress').childNodes[0].textContent = ''
     disableForm(false)
   })
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('add').addEventListener('click', addToQueue)
-  document.getElementById('process').addEventListener('click', processQueue)
+  $('#add').addEventListener('click', addToQueue)
+  $('#process').addEventListener('click', processQueue)
 })
 
 let _si = setImmediate
