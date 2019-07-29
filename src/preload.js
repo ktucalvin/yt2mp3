@@ -39,7 +39,7 @@ function extractAudio (video, folder, updateStyle) {
       }
       if (currentRegex) {
         const converted = toMilliseconds(currentRegex[1])
-        requestAnimationFrame(() => updateStyle(converted / total))
+        updateStyle(converted / total)
       }
     })
     ffmpeg.on('close', () => resolve(outfile))
@@ -67,9 +67,8 @@ function alertError (err) {
   alert(`An error has occurred. Perhaps open an issue on GitHub?\n\n${err}`)
 }
 
-function setTotalProgressText (msg) {
-  $('#total-progress').childNodes[0].textContent = msg
-  if (msg) console.log(msg)
+function setProgressText (msg) {
+  $('#song-progress').childNodes[0].textContent = msg
   const visibility = msg ? 'visible' : 'hidden'
   $('#song-progress span').style.visibility = visibility
   $('#total-progress span').style.visibility = visibility
@@ -129,6 +128,8 @@ async function processQueue () {
   }
 
   $('#total-progress .progress-value').style.width = '0'
+  $('#song-progress .progress-value').style.width = '0'
+  $('#total-progress .percent-text').style.borderColor = '#e22'
   disableForm(true)
 
   for (let i = 0; i < queue.length; i++) {
@@ -138,35 +139,32 @@ async function processQueue () {
     for (const field of $li.children[1].children) {
       if (field.value) tags[field.className] = field.value
     }
-    setTotalProgressText(`Processing ${video.title} (${i + 1} of ${queue.length})`)
-    $('#song-progress .progress-value').style.width = '0'
 
     try {
       const outfile = await extractAudio(video, outputDir, progress => {
-        const percentage = `${(progress * 100).toFixed(2)}%`
-        $('#song-progress').childNodes[0].textContent = `Extracting audio... (${percentage})`
-        $('#song-progress .progress-value').style.width = percentage
+        const songWidth = (progress * 100).toFixed(1) + '%'
+        const totalWidth = (100 * (i + progress) / queue.length).toFixed(1) + '%'
+        setProgressText(`Now processing: ${video.title} (${songWidth})`)
+        $('#song-progress .progress-value').style.width = songWidth
+        $('#total-progress .progress-value').style.width = totalWidth
+        $('#total-progress .percent-text').innerText = totalWidth
       })
-      console.log(`Audio extracted. Adding tags.`)
 
       tagSong(outfile, tags)
-      $('#song-progress .progress-value').style.width = '100%'
-      console.log(`Finished tagging ${outfile}`)
 
       $li.remove()
-      const width = Math.ceil(((i + 1) * 100) / queue.length) + '%'
-      $('#total-progress .progress-value').style.width = width
     } catch (err) {
       alertError(err)
     }
   }
 
   queue = []
-  requestAnimationFrame(() => {
-    setTotalProgressText('')
-    $('#song-progress').childNodes[0].textContent = ''
-    disableForm(false)
-  })
+  setProgressText('')
+  disableForm(false)
+  $('#total-progress .progress-value').style.width = '100%'
+  $('#song-progress .progress-value').style.width = '100%'
+  $('#total-progress .percent-text').innerText = ''
+  $('#total-progress .percent-text').style.borderColor = 'transparent'
 }
 
 window.addEventListener('DOMContentLoaded', () => {

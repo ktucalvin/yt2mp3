@@ -12,6 +12,7 @@ body {
   background-color: #eaeaea;
   padding: 1em;
   text-align: left;
+  max-width: 520px;
 }
 
 #controls p {
@@ -46,20 +47,24 @@ body {
 
 label#dl-progress {
   font-size: 12px;
+  word-wrap: break-word;
 }
 
 .progress-bar {
   margin-top: 0.3em;
   width: 100%;
   height: 8px;
-  border-radius: 12px;
   background-color: #d1d1d1;
 }
 
+#total-progress .progress-bar {
+  margin-bottom: 1em;
+}
+
 .progress-value {
+  position: relative;
   height: 100%;
   background-color: #e22;
-  border-radius: 12px;
   transition: width 0.5s;
 }
 
@@ -68,15 +73,29 @@ label#dl-progress {
   visibility: hidden;
   width: 100%;
   height: 100%;
-  background-image: repeating-linear-gradient(45deg,#e22, #e22 5px, #b50000 5px, #b50000 10px);
+  background-image: repeating-linear-gradient(45deg, #e22, #e22 5px, #b50000 5px, #b50000 10px);
   background-size: 200px 200px;
   border-radius: 12px;
   animation: load 7s infinite linear;
 }
 
+.percent-text {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  border-right: 1px solid transparent;
+  padding-top: 0.3em;
+  padding-right: 0.2em;
+}
+
 @keyframes load {
-  from { background-position: -200px; }
-  to { background-position: 0; }
+  from {
+    background-position: -200px;
+  }
+
+  to {
+    background-position: 0;
+  }
 }
 
 #controls button {
