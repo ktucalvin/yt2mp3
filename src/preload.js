@@ -12,9 +12,10 @@ const additionalArgs = process.argv.slice(-2)
 const appRoot = additionalArgs[0]
 const defaultOut = path.join(additionalArgs[1], 'yt2mp3')
 
-const ffmpegPath = appRoot.includes('.asar')
+let ffmpegPath = appRoot.includes('.asar')
   ? path.join(appRoot, '..', 'ffmpeg')
   : require('ffmpeg-static').path
+if (process.platform === 'win32') ffmpegPath += '.exe'
 let queue = []
 
 const $ = e => document.querySelector(e)
@@ -172,5 +173,5 @@ window.addEventListener('DOMContentLoaded', () => {
   $('#process').addEventListener('click', processQueue)
 })
 
-let _si = setImmediate
+const _si = setImmediate
 process.once('loaded', () => (global.setImmediate = _si))
