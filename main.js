@@ -1,6 +1,6 @@
 'use strict'
-const { app, BrowserWindow } = require('electron')
 const path = require('path')
+const { app, BrowserWindow } = require('electron')
 let mainWindow
 
 function createWindow () {
@@ -9,12 +9,14 @@ function createWindow () {
     width: 800,
     height: 600,
     webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
       preload: path.join(__dirname, 'src', 'preload.js'),
       enableRemoteModule: false,
       additionalArguments: [app.getAppPath(), app.getPath('downloads')]
     }
   })
-  mainWindow.loadFile('src/index.html')
+  mainWindow.loadFile(path.join(__dirname, 'src', 'index.html'))
   mainWindow.on('closed', function () {
     mainWindow = null
   })
@@ -23,7 +25,7 @@ function createWindow () {
 
 app.on('ready', createWindow)
 
-app.on('window-all-closed', function () {
+app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()
 })
 
@@ -32,6 +34,6 @@ app.on('web-contents-created', (event, contents) => {
   contents.on('new-window', e => e.preventDefault())
 })
 
-app.on('activate', function () {
+app.on('activate', () => {
   if (mainWindow === null) createWindow()
 })

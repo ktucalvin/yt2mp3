@@ -15,7 +15,7 @@ const defaultOut = path.join(additionalArgs[1], 'yt2mp3')
 let ffmpegPath = appRoot.includes('.asar')
   ? path.join(appRoot, '..', 'ffmpeg')
   : require('ffmpeg-static').path
-if (process.platform === 'win32') ffmpegPath += '.exe'
+if (process.platform === 'win32' && !ffmpegPath.endsWith('.exe')) ffmpegPath += '.exe'
 let queue = []
 
 const $ = e => document.querySelector(e)
@@ -69,10 +69,15 @@ function alertError (err) {
 }
 
 function setProgressText (msg) {
-  $('#song-progress').childNodes[0].textContent = msg
+  // if the first child is a text node replace it, else create it
+  if ($('#song-progress').firstChild.nodeType === 3) {
+    $('#song-progress').firstChild.textContent = msg
+  } else {
+    $('#song-progress').insertAdjacentText('afterbegin', msg)
+  }
   const visibility = msg ? 'visible' : 'hidden'
-  $('#song-progress span').style.visibility = visibility
-  $('#total-progress span').style.visibility = visibility
+  $('#song-progress .stripes').style.visibility = visibility
+  $('#total-progress .stripes').style.visibility = visibility
 }
 
 function disableForm (isDisabled) {
