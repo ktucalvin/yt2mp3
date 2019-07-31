@@ -16,7 +16,6 @@ let ffmpegPath = appRoot.includes('.asar')
   ? path.join(appRoot, '..', 'ffmpeg')
   : require('ffmpeg-static').path
 if (process.platform === 'win32' && !ffmpegPath.endsWith('.exe')) ffmpegPath += '.exe'
-let queue = []
 
 const $ = e => document.querySelector(e)
 
@@ -100,6 +99,7 @@ async function addToQueue () {
       const $li = document.createElement('li')
       $li.innerHTML =
       `
+        <button>X</button>
         <img src="https://i.ytimg.com/vi/${id}/mqdefault.jpg">
         <form>
           <input type="text" class="title" placeholder="Song Title">
@@ -109,13 +109,8 @@ async function addToQueue () {
       `
       try {
         const info = await fetchVideoInfo(id)
-        const video = {
-          element: $li,
-          url: `https://www.youtube.com/watch?v=${id}`,
-          title: info.title,
-          uploader: info.author_name
-        }
-        queue.push(video)
+        $li.setAttribute('data-url', `https://www.youtube.com/watch?v=${id}`)
+        $li.setAttribute('data-title', info.title)
         $('#queue').appendChild($li)
       } catch (err) {
         alertError(err)
@@ -126,7 +121,8 @@ async function addToQueue () {
 }
 
 async function processQueue () {
-  if (!queue.length) return
+  const songs = [...$('#queue').children]
+  if (!songs.length) return
   let outputDir = $('#outputDir').files[0]
   outputDir = outputDir ? outputDir.path : defaultOut
   if (!fs.existsSync(outputDir)) {
@@ -138,18 +134,21 @@ async function processQueue () {
   $('#total-progress .percent-text').style.borderColor = '#e22'
   disableForm(true)
 
-  for (let i = 0; i < queue.length; i++) {
-    const video = queue[i]
-    const $li = video.element
+  for (let i = 0; i < songs.length; i++) {
+    const $li = songs[i]
     const tags = {}
-    for (const field of $li.children[1].children) {
+    for (const field of $li.getElementsByTagName('input')) {
       if (field.value) tags[field.className] = field.value
+    }
+    const video = {
+      title: tags.title || $li.getAttribute('data-title'),
+      url: $li.getAttribute('data-url')
     }
 
     try {
       const outfile = await extractAudio(video, outputDir, progress => {
         const songWidth = (progress * 100).toFixed(1) + '%'
-        const totalWidth = (100 * (i + progress) / queue.length).toFixed(1) + '%'
+        const totalWidth = (100 * (i + progress) / songs.length).toFixed(1) + '%'
         setProgressText(`Now processing: ${video.title} (${songWidth})`)
         $('#song-progress .progress-value').style.width = songWidth
         $('#total-progress .progress-value').style.width = totalWidth
@@ -164,7 +163,6 @@ async function processQueue () {
     }
   }
 
-  queue = []
   setProgressText('')
   disableForm(false)
   $('#total-progress .progress-value').style.width = '100%'
@@ -176,6 +174,11 @@ async function processQueue () {
 window.addEventListener('DOMContentLoaded', () => {
   $('#add').addEventListener('click', addToQueue)
   $('#process').addEventListener('click', processQueue)
+  $('#queue').addEventListener('click', function (e) {
+    if (e.target.tagName === 'BUTTON') {
+      e.target.parentNode.remove()
+    }
+  })
 })
 
 const _si = setImmediate

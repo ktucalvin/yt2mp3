@@ -151,6 +151,22 @@ label#dl-progress {
   max-width: 100%;
 }
 
+#queue button {
+  position: absolute;
+  background-color: #e22;
+  color: #fff;
+  padding: 0.3em 1em;
+  opacity: 0;
+  transition: opacity 0.4s;
+  border: 0;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+#queue button:hover {
+  opacity: 1;
+}
+
 #queue img {
   align-self: center;
   max-width: 285px;
