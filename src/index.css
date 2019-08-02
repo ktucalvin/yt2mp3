@@ -3,7 +3,7 @@
 body {
   font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
   background-color: #232126;
-  font-size: 18px;
+  font-size: 14px;
   text-align: center;
 }
 
@@ -17,6 +17,7 @@ body {
 
 #controls p {
   margin: 0;
+  font-size: 18px;
 }
 
 #controls form {
@@ -36,13 +37,11 @@ body {
 
 #controls label {
   display: block;
-  font-size: 14px;
   margin: 0.3em 0;
 }
 
 #controls input[type="file"] {
   display: block;
-  font-size: 14px;
 }
 
 label#dl-progress {
@@ -149,6 +148,7 @@ label#dl-progress {
   list-style-type: none;
   width: 600px;
   max-width: 100%;
+  height: 160px;
 }
 
 #queue button {
@@ -159,7 +159,6 @@ label#dl-progress {
   opacity: 0;
   transition: opacity 0.4s;
   border: 0;
-  font-size: 15px;
   cursor: pointer;
 }
 
@@ -174,11 +173,9 @@ label#dl-progress {
 }
 
 #queue form {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 #queue input {
@@ -190,6 +187,7 @@ label#dl-progress {
   width: 90%;
   outline: none;
   background-color: rgba(0, 0, 0, 0);
+  transition: 0.5s;
 }
 
 #queue input:focus,
@@ -197,6 +195,35 @@ label#dl-progress {
 #queue input:active {
   border: 0;
   border-bottom: 2px solid #e22;
+}
+
+.selection::after {
+  display: inline-block;
+  content: ' ';
+  border-top: 0.5em solid #444;
+  border-left: 0.3em solid transparent;
+  border-right: 0.3em solid transparent;
+}
+
+#queue select {
+  margin: 1em auto;
+  margin-bottom: 1.5em;
+  font-size: 12px;
+  border: 0;
+  -webkit-appearance: none;
+  background-color: transparent;
+  border-bottom: 2px solid #ccc;
+  border-radius: 0;
+  padding: 0.5em 1em;
+  cursor: pointer;
+  transition: 0.5s;
+  outline: none;
+}
+
+#queue select:focus,
+#queue select:active,
+#queue select:hover {
+  border-color: #e22;
 }
 
 @media all and (min-width: 1250px) {

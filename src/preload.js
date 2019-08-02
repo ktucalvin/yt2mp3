@@ -102,9 +102,22 @@ async function addToQueue () {
         <button>X</button>
         <img src="https://i.ytimg.com/vi/${id}/mqdefault.jpg">
         <form>
-          <input type="text" class="title" placeholder="Song Title">
-          <input type="text" class="artist" placeholder="Artist">
-          <input type="text" class="album" placeholder="Album">
+          <input type="text" data-tag="title" placeholder="Song Title">
+          <input type="text" data-tag="artist" placeholder="Artist">
+          <input type="text" data-tag="album" placeholder="Album">
+          <input type="text" data-tag="performerInfo" placeholder="Album Artist">
+          <div class="selection">
+            <select>
+              <option>Add another field</option>
+              <option value="composer">Composer</option>
+              <option value="genre">Genre</option>
+              <option value="subtitle">Subtitle</option>
+              <option value="conductor">Conductor</option>
+              <option value="remixArtist">Remix Artist</option>
+              <option value="publisher">Publisher</option>
+              <option value="trackNumber">Track Number</option>
+            </select>
+          </div>
         </form>
       `
       try {
@@ -138,7 +151,7 @@ async function processQueue () {
     const $li = songs[i]
     const tags = {}
     for (const field of $li.getElementsByTagName('input')) {
-      if (field.value) tags[field.className] = field.value
+      if (field.value) tags[field.getAttribute('data-tag')] = field.value
     }
     const video = {
       title: tags.title || $li.getAttribute('data-title'),
@@ -174,10 +187,20 @@ async function processQueue () {
 window.addEventListener('DOMContentLoaded', () => {
   $('#add').addEventListener('click', addToQueue)
   $('#process').addEventListener('click', processQueue)
-  $('#queue').addEventListener('click', function (e) {
-    if (e.target.tagName === 'BUTTON') {
-      e.target.parentNode.remove()
-    }
+  $('#queue').addEventListener('click', e => {
+    if (e.target.tagName !== 'BUTTON') return
+    e.target.parentNode.remove()
+  })
+  $('#queue').addEventListener('change', e => {
+    if (e.target.tagName !== 'SELECT') return
+    const option = e.target.selectedOptions[0]
+    const $input = document.createElement('input')
+    $input.setAttribute('type', 'text')
+    $input.setAttribute('data-tag', option.value)
+    $input.setAttribute('placeholder', option.innerText)
+    e.target.parentNode.parentNode.insertBefore($input, e.target.parentNode)
+    e.target.selectedOptions[0].remove()
+    $input.focus()
   })
 })
 
