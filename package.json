@@ -1,12 +1,12 @@
 {
   "name": "yt2mp3",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Convert videos from YouTube to tagged mp3 files.",
   "main": "app/main.js",
   "scripts": {
     "dev": "electron main.js",
     "pack": "concurrently \"webpack --config webpack.renderer.config.js\" \"webpack --config webpack.main.config.js\"",
-    "release": "electron-builder"
+    "release": "npm run pack && electron-builder"
   },
   "keywords": [],
   "private": true,
@@ -18,7 +18,7 @@
     "concurrently": "^4.1.1",
     "css-loader": "^3.1.0",
     "electron": "^5.0.6",
-    "electron-builder": "^21.1.1",
+    "electron-builder": "^21.2.0",
     "html-loader": "^0.5.5",
     "html-webpack-plugin": "^3.2.0",
     "mini-css-extract-plugin": "^0.8.0",
