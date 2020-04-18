@@ -8,13 +8,10 @@ const sanitize = require('sanitize-filename')
 const id3 = require('node-id3')
 
 // passed from main process
-const additionalArgs = process.argv.slice(-2)
-const appRoot = additionalArgs[0]
-const defaultOut = path.join(additionalArgs[1], 'yt2mp3')
+const additionalArgs = process.argv.slice(-1)
+const defaultOut = path.join(additionalArgs[0], 'yt2mp3')
 
-let ffmpegPath = appRoot.includes('.asar')
-  ? path.join(appRoot, '..', 'ffmpeg')
-  : require('ffmpeg-static').path
+let ffmpegPath = require('ffmpeg-static')
 if (process.platform === 'win32' && !ffmpegPath.endsWith('.exe')) ffmpegPath += '.exe'
 
 const $ = e => document.querySelector(e)

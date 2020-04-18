@@ -13,7 +13,7 @@ function createWindow () {
       contextIsolation: true,
       preload: path.join(__dirname, 'src', 'preload.js'),
       enableRemoteModule: false,
-      additionalArguments: [app.getAppPath(), app.getPath('downloads')]
+      additionalArguments: [app.getPath('downloads')]
     }
   })
   mainWindow.loadFile(path.join(__dirname, 'src', 'index.html'))

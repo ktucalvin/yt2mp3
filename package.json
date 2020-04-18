@@ -6,50 +6,32 @@
   "scripts": {
     "dev": "electron main.js",
     "pack": "concurrently \"webpack --config webpack.renderer.config.js\" \"webpack --config webpack.main.config.js\"",
-    "release": "npm run pack && electron-builder"
+    "build": "npm run pack && electron-builder"
   },
   "keywords": [],
   "private": true,
   "author": "ktucalvin",
   "license": "MIT",
   "devDependencies": {
-    "@babel/core": "^7.5.5",
-    "babel-loader": "^8.0.6",
-    "concurrently": "^4.1.1",
-    "css-loader": "^3.1.0",
-    "electron": "^5.0.6",
-    "electron-builder": "^21.2.0",
-    "html-loader": "^0.5.5",
-    "html-webpack-plugin": "^3.2.0",
-    "mini-css-extract-plugin": "^0.8.0",
+    "@babel/core": "^7.9.0",
+    "babel-loader": "^8.1.0",
+    "concurrently": "^5.1.0",
+    "css-loader": "^3.5.2",
+    "electron": "^8.2.3",
+    "electron-builder": "^22.5.1",
+    "html-loader": "^1.1.0",
+    "html-webpack-plugin": "^0.4.0",
+    "mini-css-extract-plugin": "^0.9.0",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
-    "terser-webpack-plugin": "^1.3.0",
-    "webpack": "^4.38.0",
-    "webpack-cli": "^3.3.6",
+    "terser-webpack-plugin": "^2.3.5",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11",
     "webpack-node-externals": "^1.7.2"
   },
   "dependencies": {
-    "ffmpeg-static": "^2.5.0",
-    "node-id3": "^0.1.7",
-    "sanitize-filename": "^1.6.1",
-    "ytdl-core": "^0.29.3"
-  },
-  "build": {
-    "files": [
-      "!node_modules/ffmpeg-static/**/*",
-      "!.vscode",
-      "!webpack*",
-      "!src/**/*"
-    ],
-    "extraResources": [
-      {
-        "from": "node_modules/ffmpeg-static/bin/${platform}/${arch}/ffmpeg",
-        "to": "ffmpeg"
-      },
-      {
-        "from": "node_modules/ffmpeg-static/bin/${platform}/${arch}/ffmpeg.exe",
-        "to": "ffmpeg.exe"
-      }
-    ]
+    "ffmpeg-static": "^4.1.1",
+    "node-id3": "^0.1.16",
+    "sanitize-filename": "^1.6.3",
+    "ytdl-core": "^2.1.0"
   }
 }
