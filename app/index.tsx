@@ -1,9 +1,14 @@
 import React, { Fragment } from 'react';
 import { render } from 'react-dom';
 import { AppContainer as ReactHotAppContainer } from 'react-hot-loader';
+import Icons from 'uikit/dist/js/uikit-icons';
+import UIkit from './types/uikit';
 import Root from './containers/Root';
 import { configureStore, history } from './store/configureStore';
 import './app.global.css';
+
+// Load UIkit icons
+UIkit.use(Icons);
 
 const store = configureStore();
 
