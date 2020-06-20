@@ -9,10 +9,13 @@
  * `./app/main.prod.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
+import os from 'os';
 import { app, BrowserWindow } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
+
+const additionalArguments = [app.getPath('downloads'), os.platform()];
 
 export default class AppUpdater {
   constructor() {
@@ -61,10 +64,12 @@ const createWindow = async () => {
     webPreferences:
       process.env.NODE_ENV === 'development' || process.env.E2E_BUILD === 'true'
         ? {
-            nodeIntegration: true
+            nodeIntegration: true,
+            additionalArguments
           }
         : {
-            preload: path.join(__dirname, 'dist/renderer.prod.js')
+            preload: path.join(__dirname, 'dist/renderer.prod.js'),
+            additionalArguments
           }
   });
 

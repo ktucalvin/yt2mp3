@@ -4,3 +4,33 @@
  */
 @import '~@fortawesome/fontawesome-free/css/all.css';
 @import '~uikit/dist/css/uikit.min.css';
+
+[uk-icon='more-vertical'] {
+  cursor: pointer;
+}
+
+.song-dropdown {
+  padding: 0;
+  min-width: 150px;
+}
+
+.song-dropdown li:hover {
+  background-color: #eee;
+}
+
+.song-dropdown button {
+  cursor: pointer;
+  background: none;
+  padding: 10px 0 10px 20px;
+  margin: 0;
+  border: 0;
+  width: 100%;
+  height: 100%;
+  text-align: left;
+  color: #333;
+}
+
+footer {
+  padding: 1em;
+  color: #eee;
+}
