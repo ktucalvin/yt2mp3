@@ -27,5 +27,8 @@
     "yarn.lock": true,
     "*.{css,sass,scss}.d.ts": true
   },
-  "standard.enable": false
+  "standard.enable": false,
+  "files.exclude": {
+    "node_modules": true
+  }
 }

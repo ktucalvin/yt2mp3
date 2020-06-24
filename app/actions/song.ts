@@ -1,6 +1,13 @@
 import { validateURL, getURLVideoID } from 'ytdl-core';
 import type { Song, Dispatch, YoutubeApiResponse } from '../types/app';
 
+// eslint-disable-next-line import/no-cycle
+import {
+  START_FETCH_METADATA,
+  END_FETCH_METADATA,
+  notifyFailedDownload
+} from './download';
+
 export const ADD_SONG = 'ADD_SONG';
 export const REMOVE_SONG = 'REMOVE_SONG';
 export const BEGIN_EDIT_SONG = 'BEGIN_EDIT_SONG';
@@ -27,6 +34,10 @@ export function addSong(url: string) {
     try {
       const id = getURLVideoID(url);
 
+      dispatch({
+        type: START_FETCH_METADATA
+      });
+
       const response = await fetch(`
         https://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=${id}&format=json
       `);
@@ -40,9 +51,12 @@ export function addSong(url: string) {
           artist: result.author_name
         }
       });
-    } catch {
-      // invalid ID or fetch error
-      // TODO: emit Download Failed action
+
+      dispatch({
+        type: END_FETCH_METADATA
+      });
+    } catch (err) {
+      dispatch(notifyFailedDownload(err));
     }
   };
 }

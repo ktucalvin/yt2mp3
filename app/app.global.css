@@ -5,10 +5,29 @@
 @import '~@fortawesome/fontawesome-free/css/all.css';
 @import '~uikit/dist/css/uikit.min.css';
 
+/* Custom UIkit styles */
 [uk-icon='more-vertical'] {
   cursor: pointer;
 }
 
+.uk-button-primary {
+  background-color: #c00;
+  border: 2px solid #c00;
+  transition: 0.4s;
+}
+
+.uk-button-primary:active,
+.uk-button-primary:hover {
+  background-color: #de0000;
+  border: 2px solid #de0000;
+}
+
+.uk-button-primary:focus {
+  background-color: #c00;
+  border: 2px solid #000;
+}
+
+/* Song table */
 .song-dropdown {
   padding: 0;
   min-width: 150px;
@@ -30,7 +49,84 @@
   color: #333;
 }
 
+.edit-song-button {
+  border: 0;
+  background: none;
+}
+
+#song-controls {
+  padding-bottom: 1em;
+}
+
+.input-helper-text {
+  display: block;
+  min-height: 1.5em;
+}
+
+/* Progress Styling */
+.progress-bar {
+  margin-top: 0.3em;
+  width: 100%;
+  height: 12px;
+  border-radius: 12px;
+  background-color: #d1d1d1;
+}
+
+.progress-value {
+  position: relative;
+  height: 100%;
+  background-color: #e22;
+  border-radius: 12px;
+  transition: width 0.5s;
+}
+
+.progress-stripes {
+  background-image: repeating-linear-gradient(
+    45deg,
+    #e22,
+    #e22 5px,
+    #b50000 5px,
+    #b50000 10px
+  ) !important;
+  background-size: 200px 200px;
+  border-radius: 12px;
+  animation: load 7s infinite linear;
+}
+
+@keyframes load {
+  from {
+    background-position: -200px;
+  }
+
+  to {
+    background-position: 0;
+  }
+}
+
+/* Download info */
+#download-monitor {
+  animation: slide-down-reveal 3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+#download-info {
+  padding: 1em;
+}
+
+@keyframes slide-down-reveal {
+  from {
+    max-height: 0;
+    overflow-y: hidden;
+  }
+
+  to {
+    max-height: 400px;
+    overflow-y: visible;
+  }
+}
+
+/* Other */
 footer {
   padding: 1em;
   color: #eee;
+  background-color: #121212;
 }

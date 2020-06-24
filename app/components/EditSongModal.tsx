@@ -46,7 +46,6 @@ class EditSongModal extends PureComponent<EditSongModalProps> {
 
   componentDidMount() {
     UIkit.util.on('#edit-song-modal', 'hide', () => {
-      // eslint-disable-next-line react/destructuring-assignment
       this.props.beginEditSong(''); // Discard any edits left in the modal
     });
   }
@@ -120,7 +119,6 @@ class EditSongModal extends PureComponent<EditSongModalProps> {
                 type="button"
                 onClick={() => {
                   if (this.form) {
-                    // eslint-disable-next-line react/destructuring-assignment
                     this.props.finishEditSong({
                       id: song.id,
                       ...serializeForm(this.form, { hash: true })

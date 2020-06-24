@@ -1,41 +1,28 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
-import { addSong } from '../actions/song';
 import SongEntry from '../components/SongEntry';
 import EditSongModal from '../components/EditSongModal';
-import type { ApplicationState, Song } from '../types/app';
+import SongControls from '../components/SongControls';
+import type { ApplicationState, Song, DownloadState } from '../types/app';
+import NotificationHandler from '../components/NotificationHandler';
+import DownloadMonitor from '../components/DownloadMonitor';
 
 interface HomeProps {
-  addSong: (url: string) => void;
   songs: Song[];
+  downloadProgress: number;
+  downloadState: DownloadState;
 }
 
 function Home(props: HomeProps) {
-  const { songs = [] } = props;
+  const { songs } = props;
   return (
     // uk-light uk-background-secondary
     <>
       <div className="uk-container uk-height-1-1" uk-height-viewport="true">
-        <div className="uk-section">
-          <input
-            className="uk-input"
-            placeholder="Paste YouTube URL here"
-            onChange={e => props.addSong(e.target.value)}
-          />
-
-          <div className="uk-text-right uk-margin-top">
-            <progress className="uk-progress" value="70" max="100" />
-            <button
-              type="button"
-              className="uk-button uk-button-primary uk-flex-inline uk-flex-middle"
-            >
-              Download Queue
-              <span uk-icon="download" className="uk-margin-small-left" />
-            </button>
-          </div>
-        </div>
+        <NotificationHandler />
         <EditSongModal />
+        <SongControls />
+        <DownloadMonitor />
 
         <table className="uk-table uk-table-small uk-table-divider uk-table-middle">
           <thead>
@@ -54,9 +41,7 @@ function Home(props: HomeProps) {
           </tbody>
         </table>
       </div>
-      <footer className="uk-margin-top uk-background-secondary uk-text-center">
-        yt2mp3 v0.1.0
-      </footer>
+      <footer className="uk-margin-top uk-text-center">yt2mp3 v0.1.0</footer>
     </>
   );
 }
@@ -67,13 +52,4 @@ function mapStateToProps(state: ApplicationState) {
   };
 }
 
-function mapDispatchToProps(dispatch: Dispatch) {
-  return bindActionCreators(
-    {
-      addSong
-    },
-    dispatch
-  );
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default connect(mapStateToProps)(Home);

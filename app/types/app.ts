@@ -1,14 +1,10 @@
 import { Dispatch as ReduxDispatch, Store as ReduxStore, Action } from 'redux';
 
-export const NO_OP = 'NO_OP';
-
-export const enum DownloadState {
-  FETCHING_METADATA,
-  INVALID,
-  IN_PROGRESS,
-  FINISHED,
-  FAILED
-}
+export type DownloadState =
+  | 'FETCHING_METADATA'
+  | 'IN_PROGRESS'
+  | 'FINISHED'
+  | 'FAILED';
 
 export interface YoutubeApiResponse {
   author_url: string;
@@ -38,6 +34,19 @@ export interface Song {
   trackNumber?: number;
 }
 
+export interface DownloadReducerState {
+  downloadState: DownloadState;
+  downloadId?: string;
+  songProgress: number;
+  totalProgress: number;
+  message?: string;
+}
+
+export interface SystemReducerState {
+  downloadFolder: string;
+  platform: string;
+}
+
 export interface SongReducerState {
   editId?: string;
   songs: {
@@ -46,12 +55,9 @@ export interface SongReducerState {
 }
 
 export interface ApplicationState {
-  system: {
-    downloadFolder: string;
-    platform: string;
-  };
-
+  system: SystemReducerState;
   song: SongReducerState;
+  download: DownloadReducerState;
 }
 
 export type GetState = () => ApplicationState;

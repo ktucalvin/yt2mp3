@@ -1,4 +1,5 @@
 import { Action } from 'redux';
+import type { SongReducerState } from '../types/app';
 import {
   ADD_SONG,
   REMOVE_SONG,
@@ -7,9 +8,8 @@ import {
   AddSongAction,
   RemoveSongAction
 } from '../actions/song';
-import { SongReducerState } from '../types/app';
 
-const defaultSongState = {
+const defaultSongState: SongReducerState = {
   songs: {}
 };
 

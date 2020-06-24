@@ -14,5 +14,8 @@
     "postinstall": "yarn electron-rebuild"
   },
   "license": "MIT",
-  "dependencies": {}
+  "dependencies": {
+    "ffmpeg-static": "^4.2.4",
+    "node-id3": "^0.1.17"
+  }
 }

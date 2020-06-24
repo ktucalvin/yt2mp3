@@ -28,7 +28,9 @@ function SongEntry(props: SongProps) {
       <td>{song.album}</td>
       <td>{song.albumArtist}</td>
       <td style={{ minWidth: '1.5em' }}>
-        <span uk-icon="more-vertical" />
+        <button type="button" className="edit-song-button">
+          <span uk-icon="more-vertical" />
+        </button>
         <div
           id={`${song.id}-dropdown`}
           className="song-dropdown uk-width-auto"
