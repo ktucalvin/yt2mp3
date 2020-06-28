@@ -41,7 +41,7 @@ function Home(props: HomeProps) {
           </tbody>
         </table>
       </div>
-      <footer className="uk-margin-top uk-text-right">yt2mp3 v2.1.0</footer>
+      <footer className="uk-margin-top uk-text-right">yt2mp3 v2.1.1</footer>
     </>
   );
 }

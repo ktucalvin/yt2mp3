@@ -35,7 +35,7 @@ function SongEntry(props: SongProps) {
           <span uk-icon="more-vertical" />
         </button>
         <div
-          id={`${song.id}-dropdown`}
+          id={`dropdown-${song.id}`}
           className="song-dropdown uk-width-auto"
           uk-dropdown="mode: click; pos: bottom-right"
         >
@@ -44,7 +44,7 @@ function SongEntry(props: SongProps) {
               <button
                 type="button"
                 onClick={() => {
-                  UIkit.dropdown(`#${song.id}-dropdown`).hide(false);
+                  UIkit.dropdown(`#dropdown-${song.id}`).hide(false);
                   UIkit.modal('#edit-song-modal').show();
                   props.beginEditSong(song.id);
                 }}
