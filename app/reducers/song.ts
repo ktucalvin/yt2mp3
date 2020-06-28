@@ -39,6 +39,7 @@ export default function manageSong(
   if (action.type === FINISH_EDIT_SONG) {
     const { song } = action as AddSongAction;
     newState.songs[song.id] = song;
+    newState.editId = '';
   }
 
   return newState;

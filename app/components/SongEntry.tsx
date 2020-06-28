@@ -4,6 +4,7 @@ import { bindActionCreators, Dispatch } from 'redux';
 import UIkit from '../types/uikit';
 import { removeSong, beginEditSong } from '../actions/song';
 import { Song } from '../types/app';
+import SongField from './SongField';
 
 interface SongProps {
   song: Song;
@@ -14,7 +15,7 @@ interface SongProps {
 function SongEntry(props: SongProps) {
   const { song } = props;
   return (
-    <tr>
+    <tr className="song-entry">
       <td className="uk-table-shrink">
         <img
           src={`https://i.ytimg.com/vi/${song.id}/hqdefault.jpg`}
@@ -23,10 +24,12 @@ function SongEntry(props: SongProps) {
           width="75"
         />
       </td>
-      <td>{song.title}</td>
-      <td>{song.artist}</td>
-      <td>{song.album}</td>
-      <td>{song.albumArtist}</td>
+
+      <SongField song={song} field="title" />
+      <SongField song={song} field="artist" />
+      <SongField song={song} field="album" />
+      <SongField song={song} field="albumArtist" />
+
       <td style={{ minWidth: '1.5em' }}>
         <button type="button" className="edit-song-button">
           <span uk-icon="more-vertical" />

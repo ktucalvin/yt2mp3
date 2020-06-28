@@ -54,6 +54,11 @@
   background: none;
 }
 
+.song-entry .song-field-editable {
+  word-break: break-all;
+}
+
+/* Song Input */
 #song-controls {
   padding-bottom: 1em;
 }
@@ -127,6 +132,4 @@
 /* Other */
 footer {
   padding: 1em;
-  color: #eee;
-  background-color: #121212;
 }
