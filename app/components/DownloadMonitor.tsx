@@ -19,7 +19,7 @@ function DownloadMonitor(props: DownloadMonitorProps) {
   if (!song && totalProgress >= 100) {
     return (
       <div id="download-monitor">
-        <div id="download-info" className="uk-section uk-background-muted">
+        <div id="download-info" className="uk-section uk-background-secondary">
           <div>Finished!</div>
         </div>
         <ProgressBar stripes percent={songProgress} />
@@ -32,9 +32,9 @@ function DownloadMonitor(props: DownloadMonitorProps) {
     <div id="download-monitor">
       <div id="download-info" className="uk-section uk-background-muted">
         <div>
-          {song?.title ? (
+          {song ? (
             <>
-              <b>Current Song</b>: {song?.title}
+              <b>Current Song</b>: {song.title || song.id}
             </>
           ) : (
             'Preparing next song...'

@@ -17,7 +17,7 @@ function NotificationHandler(props: NotificationHandlerProps) {
         <span uk-icon="icon: warning"></span>
         <span style="margin-left: 1em">An error has occurred, please try again or report this error: </span>
       </div>
-      <span class="uk-text-small">${message}</span>
+      <div class="uk-text-small notification-error">${message}</div>
       `,
       status: 'danger'
     });
