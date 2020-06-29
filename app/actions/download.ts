@@ -41,7 +41,18 @@ function extractAudio(
   onProgress: (progress: number) => void
 ): Promise<string> {
   return new Promise((resolve, reject) => {
-    const outfile = path.join(folder, `${sanitize(song.title || song.id)}.mp3`);
+    let filename = '';
+    if (song.title && song.artist) {
+      filename = `${song.artist} - ${song.title}`;
+    } else if (song.title) {
+      filename = `${song.title}`;
+    } else {
+      filename = `${song.id}`;
+    }
+
+    filename = `${sanitize(filename).slice(0, 200)}.mp3`;
+
+    const outfile = path.join(folder, filename);
     const args = [...ffmpegArgs, outfile];
     const ffmpeg = execFile(ffmpegPath, args);
     if (!ffmpeg || !ffmpeg.stdin || !ffmpeg.stderr) {
@@ -110,8 +121,17 @@ export function downloadQueue() {
     const outfolder = path.join(state.system.downloadFolder, 'yt2mp3');
     const songs = Object.values(state.song.songs);
 
-    if (!fs.existsSync(outfolder)) {
-      fs.mkdirSync(outfolder, { recursive: true });
+    try {
+      if (!fs.existsSync(outfolder)) {
+        fs.mkdirSync(outfolder, { recursive: true });
+      }
+    } catch (err) {
+      console.error(err);
+      err.message = `Failed to create output folder. Original error message logged to console.`;
+      dispatch({
+        type: NOTIFY_FAILED_DOWNLOAD,
+        error: err
+      });
     }
 
     for (let i = 0; i < songs.length; i++) {

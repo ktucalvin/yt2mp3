@@ -44,8 +44,10 @@ export default function manageDownload(
   }
 
   if (action.type === DlActions.NOTIFY_FAILED_DOWNLOAD) {
+    const report = action as DlActions.DownloadFailedAction;
     newState.downloadState = 'FAILED';
-    newState.message = (action as DlActions.DownloadFailedAction).error.message;
+    newState.message = report.error.message;
+    console.error(report.error);
   }
 
   return newState;
