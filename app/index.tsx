@@ -18,6 +18,11 @@ const store = configureStore({
   },
   song: {
     songs: {}
+  },
+  download: {
+    downloadState: 'FINISHED',
+    songProgress: 0,
+    totalProgress: 0
   }
 });
 

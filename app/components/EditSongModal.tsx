@@ -1,10 +1,13 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
+import { remote } from 'electron';
 import { bindActionCreators, Dispatch } from 'redux';
 import serializeForm from 'form-serialize';
 import UIkit from '../types/uikit';
 import { finishEditSong, beginEditSong } from '../actions/song';
 import type { ApplicationState, Song } from '../types/app';
+
+const { nativeTheme } = remote.require('electron');
 
 interface SongFieldProps {
   label: string;
@@ -48,14 +51,23 @@ class EditSongModal extends PureComponent<EditSongModalProps> {
     UIkit.util.on('#edit-song-modal', 'hide', () => {
       this.props.beginEditSong(''); // Discard any edits left in the modal
     });
+
+    // nativeTheme.on('updated', () => {
+    //   this.forceUpdate();
+    // });
   }
 
   render() {
     const { song } = this.props;
+    let containerClass = 'uk-modal-dialog ';
+    if (nativeTheme.shouldUseDarkColors) {
+      containerClass += 'uk-light uk-background-secondary';
+    }
+
     return (
       <>
         <div id="edit-song-modal" uk-modal="true">
-          <div className="uk-modal-dialog">
+          <div className={containerClass}>
             <div className="uk-background-muted uk-modal-header">
               {song.id && (
                 <img

@@ -133,3 +133,93 @@
 footer {
   padding: 1em;
 }
+
+.notification-error {
+  white-space: pre-wrap;
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  body {
+    color: #e0e0e0;
+    background-color: #121212;
+  }
+
+  footer {
+    background-color: #121212;
+  }
+
+  [uk-icon='more-vertical'] {
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .uk-light .uk-form-danger,
+  .uk-light .uk-form-danger:focus {
+    border-color: #f0506e;
+    color: #f0506e;
+  }
+
+  .uk-background-secondary {
+    background-color: #121212;
+  }
+
+  .uk-modal-header,
+  .uk-modal-footer {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 0;
+  }
+
+  #download-info {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+
+  .song-dropdown button {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .song-dropdown li {
+    background-color: #2e2e2e;
+  }
+
+  .song-dropdown li:hover {
+    background-color: #353535;
+  }
+
+  .progress-bar {
+    background-color: #2e2e2e;
+  }
+
+  .uk-light .uk-button-primary {
+    color: #e0e0e0;
+    background-color: #c00;
+    border: 2px solid #c00;
+    transition: 0.4s;
+  }
+  
+  .uk-light .uk-button-primary:active,
+  .uk-light .uk-button-primary:hover {
+    color: #e0e0e0;
+    background-color: #de0000;
+    border: 2px solid #de0000;
+  }
+  
+  .uk-light .uk-button-primary:focus {
+    color: #e0e0e0;
+    background-color: #c00;
+    border: 2px solid #e0e0e0;
+  }
+
+  .uk-light .uk-button-default {
+    transition: 0.4s background-color border-color;
+  }
+
+  .uk-light .uk-button-default:active,
+  .uk-light .uk-button-default:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .uk-light .uk-button-default:focus {
+    border: 2px solid #e0e0e0;
+  }
+}
