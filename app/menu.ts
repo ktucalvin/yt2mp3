@@ -14,8 +14,19 @@ interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
   submenu?: DarwinMenuItemConstructorOptions[] | Menu;
 }
 
+type MenuItems = MenuItemConstructorOptions | Electron.MenuItem;
+
+const editContextMenu: MenuItems[] = [
+  { label: 'Cut', role: 'cut' },
+  { label: 'Copy', role: 'copy' },
+  { label: 'Paste', role: 'paste' },
+  { label: 'Delete', role: 'delete' },
+  { type: 'separator' },
+  { label: 'Select All', role: 'selectAll' }
+];
+
 function buildLightDarkModeMenu() {
-  const menu: (MenuItemConstructorOptions | Electron.MenuItem)[] = [
+  const menu: MenuItems[] = [
     { type: 'separator' },
     {
       label: 'Light Mode',
@@ -91,7 +102,7 @@ export default class MenuBuilder {
     this.mainWindow.webContents.on('context-menu', (_, params) => {
       const { x, y } = params;
 
-      const template: (MenuItemConstructorOptions | Electron.MenuItem)[] = [
+      const template: MenuItems[] = [
         {
           label: 'Inspect element',
           click: () => {
@@ -101,23 +112,7 @@ export default class MenuBuilder {
       ];
 
       if (params.isEditable) {
-        template.unshift(
-          {
-            label: 'Cut',
-            role: 'cut'
-          },
-          {
-            label: 'Copy',
-            role: 'copy'
-          },
-          {
-            label: 'Paste',
-            role: 'paste'
-          },
-          {
-            type: 'separator'
-          }
-        );
+        template.unshift(...editContextMenu, { type: 'separator' });
       }
 
       Menu.buildFromTemplate(template).popup({ window: this.mainWindow });
@@ -127,20 +122,9 @@ export default class MenuBuilder {
   setupContextMenu() {
     this.mainWindow.webContents.on('context-menu', (_, params) => {
       if (params.isEditable) {
-        Menu.buildFromTemplate([
-          {
-            label: 'Cut',
-            role: 'cut'
-          },
-          {
-            label: 'Copy',
-            role: 'copy'
-          },
-          {
-            label: 'Paste',
-            role: 'paste'
-          }
-        ]).popup({ window: this.mainWindow });
+        Menu.buildFromTemplate(editContextMenu).popup({
+          window: this.mainWindow
+        });
       }
     });
   }
@@ -186,6 +170,8 @@ export default class MenuBuilder {
         { label: 'Cut', accelerator: 'Command+X', selector: 'cut:' },
         { label: 'Copy', accelerator: 'Command+C', selector: 'copy:' },
         { label: 'Paste', accelerator: 'Command+V', selector: 'paste:' },
+        { label: 'Delete', accelerator: 'Delete', role: 'delete' },
+        { type: 'separator' },
         {
           label: 'Select All',
           accelerator: 'Command+A',
