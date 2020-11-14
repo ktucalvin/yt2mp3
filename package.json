@@ -1,7 +1,7 @@
 {
   "name": "yt2mp3",
   "productName": "yt2mp3",
-  "version": "2.2.2",
+  "version": "2.2.4",
   "description": "Tool that batch downloads videos from YouTube, converts them to mp3 files, and adds id3 tags.",
   "scripts": {
     "build": "concurrently \"yarn build-main\" \"yarn build-renderer\"",
@@ -196,7 +196,7 @@
     "cross-spawn": "^7.0.1",
     "css-loader": "^3.4.2",
     "detect-port": "^1.3.0",
-    "electron": "7.1.13",
+    "electron": "7.2.4",
     "electron-builder": "^22.3.6",
     "electron-devtools-installer": "^2.2.4",
     "electron-rebuild": "^1.10.0",

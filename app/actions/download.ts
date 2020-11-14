@@ -151,7 +151,7 @@ export function downloadQueue() {
         tagSong(outfile, {
           title: song.title,
           artist: song.artist,
-          album: song.albumArtist,
+          album: song.album,
           performerInfo: song.albumArtist,
           composer: song.composer,
           year: song.year,
