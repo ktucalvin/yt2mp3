@@ -55,6 +55,7 @@ class Home extends PureComponent<HomeProps> {
               ))}
             </tbody>
           </table>
+          <span>{songs.length} songs in queue.</span>
         </div>
         <footer className="uk-margin-top uk-text-right">
           yt2mp3 v{packageJson.version}

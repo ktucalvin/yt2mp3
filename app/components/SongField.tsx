@@ -19,6 +19,13 @@ class SongField extends PureComponent<SongFieldProps> {
 
   handleFocus = () => {
     this.shouldDiscard = false;
+    if (this.inputRef) {
+      const range = document.createRange();
+      const sel = window.getSelection();
+      range.selectNodeContents(this.inputRef);
+      sel?.removeAllRanges();
+      sel?.addRange(range);
+    }
   };
 
   handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
