@@ -101,7 +101,7 @@ class SongControls extends PureComponent<SongControlsProps, SongControlsState> {
               className="uk-button uk-button-primary uk-flex-inline uk-flex-middle"
               onClick={this.props.downloadQueue}
             >
-              Download Queue
+              Download Queue ({this.props.queueLength})
               <span uk-icon="download" className="uk-margin-small-left" />
             </button>
           </div>
